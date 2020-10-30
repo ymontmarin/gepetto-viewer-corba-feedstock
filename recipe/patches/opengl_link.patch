@@ -1,0 +1,40 @@
+From d10e10c7faebac5f2067e49b033a049533bd0582 Mon Sep 17 00:00:00 2001
+From: yann_dm <yann.montmarin@gmail.com>
+Date: Wed, 28 Oct 2020 14:46:43 +0100
+Subject: [PATCH] gl lib private linking fix
+
+---
+ CMakeLists.txt     | 3 +++
+ src/CMakeLists.txt | 2 +-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git CMakeLists.txt CMakeLists.txt
+index 15fb504..c7bc99c 100644
+--- CMakeLists.txt
++++ CMakeLists.txt
+@@ -57,6 +57,9 @@ IF(NOT CLIENT_ONLY)
+   # {{{ Dependencies for the server.
+   ADD_PROJECT_DEPENDENCY("gepetto-viewer" REQUIRED)
+ 
++  # Because it is private in the conda version of gepetto-viewer do it manually
++  FIND_PACKAGE(OpenGL REQUIRED)
++
+   # Get desired Qt version
+   string(REPLACE "." ";" DESIRED_QT_VERSION_LIST ${GEPETTO_VIEWER_QTVERSION})
+   list(GET DESIRED_QT_VERSION_LIST 0 DESIRED_QT_VERSION_MAJOR)
+diff --git src/CMakeLists.txt src/CMakeLists.txt
+index 5ebf3c6..01885bb 100644
+--- src/CMakeLists.txt
++++ src/CMakeLists.txt
+@@ -118,7 +118,7 @@ TARGET_INCLUDE_DIRECTORIES(${LIBRARY_NAME} PRIVATE ${CMAKE_BINARY_DIR}/src)
+ ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_cpp)
+ ADD_DEPENDENCIES (${LIBRARY_NAME} generate_idl_python)
+ IF(NOT CLIENT_ONLY)
+-  TARGET_LINK_LIBRARIES(${LIBRARY_NAME} PUBLIC gepetto-viewer::gepetto-viewer)
++  TARGET_LINK_LIBRARIES(${LIBRARY_NAME} PUBLIC gepetto-viewer::gepetto-viewer PRIVATE ${OPENGL_LIBRARIES})
+ ENDIF(NOT CLIENT_ONLY)
+ PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} omniORB4)
+ 
+-- 
+2.17.1
+
